@@ -13,9 +13,10 @@ from siamese_network_semantic import SiameseLSTMw2v
 from tensorflow.contrib import learn
 import gzip
 from random import random
+import warnings
+warnings.filterwarnings('ignore', '.*do not.*',)
 # Parameters
 # ==================================================
-
 tf.flags.DEFINE_boolean("is_char_based", True, "is character based syntactic similarity. "
                                                "if false then word embedding based semantic similarity is used."
                                                "(default: True)")
@@ -39,7 +40,7 @@ tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device 
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 
 FLAGS = tf.flags.FLAGS
-FLAGS._parse_flags()
+#FLAGS._parse_flags()
 print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
@@ -142,6 +143,7 @@ with tf.Graph().as_default():
     saver = tf.train.Saver(tf.global_variables(), max_to_keep=100)
 
     # Write vocabulary
+    print('checkpoint dir:{}'.format(checkpoint_dir))
     vocab_processor.save(os.path.join(checkpoint_dir, "vocab"))
 
     # Initialize all variables
@@ -233,8 +235,8 @@ with tf.Graph().as_default():
 
     ptr=0
     max_validation_acc=0.0
-    for nn in xrange(sum_no_of_batches*FLAGS.num_epochs):
-        batch = batches.next()
+    for nn in range(sum_no_of_batches*FLAGS.num_epochs):
+        batch = batches.__next__()
         if len(batch)<1:
             continue
         x1_batch,x2_batch, y_batch = zip(*batch)
